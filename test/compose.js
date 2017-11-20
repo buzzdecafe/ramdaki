@@ -1,44 +1,37 @@
-var jsv = require('jsverify');
+const jsv = require('jsverify');
+const eq = require('./shared/eq');
 
-var R = require('..');
-var eq = require('./shared/eq');
+const compose = require('../src/compose');
 
+describe('compose', function() {
 
-describe('o', function() {
-
-  it('is not a variadic function', function() {
-    eq(typeof R.o, 'function');
-    eq(R.o.length, 3);
-  });
-
-  it('is a curried function', function() {
-    eq(R.o(R.add(1), R.multiply(2), 10), R.o(R.add(1))(R.multiply(2))(10));
-  });
+  const multiply = a => b => a * b;
+  const map = require('../src/map');
 
   it('performs right-to-left function composition', function() {
     //  f :: Number -> ([Number] -> [Number])
-    var f = R.o(R.map, R.multiply);
+    var f = compose(map)(multiply);
 
     eq(f.length, 1);
     eq(f(10)([1, 2, 3]), [10, 20, 30]);
   });
 
-  describe('o properties', function() {
+  describe('compose properties', function() {
 
     jsv.property('composes two functions', jsv.fn(), jsv.fn(), jsv.nat, function(f, g, x) {
-      return R.equals(R.o(f, g)(x), f(g(x)));
+      return R.equals(compose(f)(g)(x), f(g(x)));
     });
 
     jsv.property('associative',  jsv.fn(), jsv.fn(), jsv.fn(), jsv.nat, function(f, g, h, x) {
       var result = f(g(h(x)));
-      var fg = R.o(f, g);
-      var gh = R.o(g, h);
-      return R.all(R.equals(result), [
-        R.o(f, gh, x),
-        R.o(fg, h, x),
-        R.o(f, gh)(x),
-        R.o(fg, h)(x)
-      ]);
+      var fg = compose(f)(g);
+      var gh = compose(g)(h);
+      return [
+        compose(f)(gh)(x),
+        compose(fg)(h)(x),
+        compose(f)(gh)(x),
+        compose(fg)(h)(x)
+      ].every(r => r === result);
     });
   });
 });

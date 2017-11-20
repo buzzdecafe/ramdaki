@@ -14,16 +14,8 @@ export const func = compose;
 
 export const functor = (f, xs) => xs['fantasy-land/map'](f);
 
-// TODO: Output type?
-export const iterable = (f, xs) => {
-  let out = []; // how do we know what to output to?
-  const iter = xs[Symbol.iterator]();
-  let next = iter.next();
-  do {
-    out.push(f(next.value));
-    next = iter.next();
-  } while (!next.done);
-  return out;
-};
-
 export const transducer = _xmap;
+
+export const unknown = (f, xs) => {
+  throw new TypeError('Provided argument is not mappable');
+};

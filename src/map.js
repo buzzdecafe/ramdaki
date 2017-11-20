@@ -6,7 +6,8 @@ import _curryN from './internal/_curryN';
 // 3. Transducer
 
 function _map(f, xs) {
-  return Array.isArray(xs) ? _map.array(f, xs) : typeof xs === 'function' ? _map.func(f, xs) : xs['@@fantasy-land/map'] ? _map.functor(f, xs) : xs['@@transducer/step'] ? _map.transducer(f, xs) : xs; // idk what to do now? so here are your xs back. Throw?
+  return Array.isArray(xs) ? _map.array(f, xs) : xs['@@fantasy-land/map'] ? _map.functor(f, xs) : typeof xs === 'function' ? _map.func(f, xs) : xs['@@transducer/step'] ? _map.transducer(f, xs) : _map.unknown(f, xs) // idk what to do now? so here are your xs back. Throw?
+  ;
 }
 _map.sig = ['Functor f => (a -> b) -> f a -> f b'];
 
