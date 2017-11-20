@@ -1,6 +1,7 @@
 import compose from '../compose';
 import _xmap from './_xmap';
 
+
 export const array = (f, xs) => {
   const out = [];
   let idx = 0;
@@ -10,9 +11,11 @@ export const array = (f, xs) => {
   return out;
 };
 
+
 export const func = compose;
 
 export const functor = (f, xs) => xs['fantasy-land/map'](f);
+
 
 // TODO: Output type?
 export const iterable = (f, xs) => {
@@ -22,8 +25,9 @@ export const iterable = (f, xs) => {
   do {
     out.push(f(next.value));
     next = iter.next();
-  } while (!next.done);
+  } while(!next.done);
   return out;
-};
+}
+
 
 export const transducer = _xmap;
