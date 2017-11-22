@@ -1,10 +1,20 @@
-import _arrayFromIterator from './_arrayFromIterator';
 import _containsWith from './_containsWith';
-import _functionName from './_functionName';
-import _has from './_has';
-import _objectIs from './_objectIs';
-import keys from '../keys';
 import type from '../type';
+
+function _arrayFromIterator(iter) {
+  var list = [];
+  var next;
+  while (!(next = iter.next()).done) {
+    list.push(next.value);
+  }
+  return list;
+}
+
+function _functionName(f) {
+  // String(x => x) evaluates to "x => x", so the pattern may not match.
+  var match = String(f).match(/^function (\w*)/);
+  return match == null ? '' : match[1];
+}
 
 /**
  * private _uniqContentEquals function.
@@ -32,7 +42,7 @@ function _uniqContentEquals(aIterator, bIterator, stackA, stackB) {
 }
 
 export default function _equals(a, b, stackA, stackB) {
-  if (_objectIs(a, b)) {
+  if (Object.is(a, b)) {
     return true;
   }
 
@@ -68,7 +78,7 @@ export default function _equals(a, b, stackA, stackB) {
     case 'Boolean':
     case 'Number':
     case 'String':
-      if (!(typeof a === typeof b && _objectIs(a.valueOf(), b.valueOf()))) {
+      if (!(typeof a === typeof b && Object.is(a.valueOf(), b.valueOf()))) {
         return false;
       }
       break;
@@ -137,8 +147,8 @@ export default function _equals(a, b, stackA, stackB) {
       return false;
   }
 
-  var keysA = keys(a);
-  if (keysA.length !== keys(b).length) {
+  const keysA = Object.keys(a);
+  if (keysA.length !== Object.keys(b).length) {
     return false;
   }
 
@@ -148,7 +158,7 @@ export default function _equals(a, b, stackA, stackB) {
   idx = keysA.length - 1;
   while (idx >= 0) {
     var key = keysA[idx];
-    if (!(_has(key, b) && _equals(b[key], a[key], extendedStackA, extendedStackB))) {
+    if (!(Object.prototype.hasOwnProperty.call(b, key) && _equals(b[key], a[key], extendedStackA, extendedStackB))) {
       return false;
     }
     idx -= 1;
